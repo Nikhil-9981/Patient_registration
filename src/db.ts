@@ -1,15 +1,17 @@
- // src/db.ts
+// src/db.ts
 import { PGlite } from '@electric-sql/pglite';
+import { electricSync } from '@electric-sql/pglite-sync';
 
-const db = new PGlite('idb://patient-db'); // persists to IndexedDB
+const db = new PGlite('idb://patient-db');
 
-db.ready
+db.waitReady
   .then(() => {
-    // DB is fully initialized—any buffered queries will now run
-    console.log('PGlite ready');
+    // bypass TS checking:
+    ;(db as any).extend({ electric: electricSync() });
+    console.log('PGlite + sync ready');
   })
   .catch(err => {
-    console.error('PGlite failed to initialize:', err);
+    console.error('Failed to init PGlite:', err);
   });
 
 export default db;
