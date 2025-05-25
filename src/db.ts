@@ -1,23 +1,20 @@
 // src/db.ts
 
-// 1) Import your entity so the @Entity/@Column decorators run
-import './entities/Patient';
+import 'reflect-metadata';     // ← load the decorator polyfill first
+import './entities/Patient';   // ← import your entity so @Entity/@Column run
 
 import { PGlite } from '@electric-sql/pglite';
 import { electricSync } from '@electric-sql/pglite-sync';
 import { syncSchema } from './orm/schema';
 
 export const dbPromise = (async () => {
-  // 2) Create PGlite pointing at IndexedDB, with strict durability
   const db = await PGlite.create({
-    url: 'idb://patient-db',        // ← correct key for IndexedDB persistence
-    relaxedDurability: false,       // ← force synchronous flush to disk
-    extensions: {
-      electric: electricSync()      // ← multi-tab sync plugin
-    }
+    url: 'idb://patient-db',    // correct key for IndexedDB persistence
+    relaxedDurability: false,   // force synchronous flush to disk
+    extensions: { electric: electricSync() }
   });
 
-  // 3) Auto-generate & apply tables (now that metadata is registered)
+  // Now that your Patient metadata is registered, this will create "patients"
   await syncSchema(db);
 
   console.log('PGlite + schema + sync ready');
