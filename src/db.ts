@@ -1,17 +1,20 @@
 // src/db.ts
 import { PGlite } from '@electric-sql/pglite';
 import { electricSync } from '@electric-sql/pglite-sync';
+import { syncSchema } from './orm/schema';
 
-const db = new PGlite('idb://patient-db');
-
-db.waitReady
-  .then(() => {
-    // bypass TS checking:
-    ;(db as any).extend({ electric: electricSync() });
-    console.log('PGlite + sync ready');
-  })
-  .catch(err => {
-    console.error('Failed to init PGlite:', err);
+export const dbPromise = (async () => {
+  // 1) Create PGlite with sync plugin
+  const db = await PGlite.create({
+    url: 'idb://patient-db',
+    extensions: {
+      electric: electricSync()
+    }
   });
 
-export default db;
+  // 2) Generate & apply schema
+  await syncSchema(db);
+
+  console.log('PGlite + schema + sync ready');
+  return db;
+})();
