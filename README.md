@@ -115,12 +115,11 @@ patient-reg-app/
 
 ## 📦 Deployment
 
-1. **Push** your code to a public GitHub/GitLab/Bitbucket repo.
-2. **Connect** the repo to Vercel or Netlify:
+ .
+2. **Connect** App has been deployed to Vercel :
 
-   * **Build command:** `npm run build`
-   * **Publish directory:** `dist`
-3. **Deploy** and share the live URL here.
+ 
+3. **Deploy**  : https://patient-registration-teal.vercel.app/
 
 ---
 
