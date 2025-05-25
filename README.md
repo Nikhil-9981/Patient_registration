@@ -2,28 +2,41 @@
 
 A frontend-only patient registration application that uses [PGlite](https://pglite.dev/) (PostgreSQL compiled to WebAssembly) for local storage, real-time multi-tab synchronization, and a decorator-based mini-ORM built from scratch.
 
-## Features
+---
 
-* **Register new patients** via a simple form (ID, Name, Age).
-* **List all patients** in real time in the same tab and across multiple tabs.
-* **Local storage** persisted in IndexedDB using PGlite (no backend required).
-* **Decorator-driven ORM**: `@Entity`/`@Column`, automatic schema generation.
-* **CRUD repository layer** with parameterized SQL queries.
-* **ElectricSQL sync plugin** for multi-tab live updates.
+## 🎯 Features
 
-## Tech Stack
+* **Register new patients** via a simple form (ID, Name, Age) with inline validation and error messages.
+* **Edit & Delete** existing patients directly from the list.
+* **Pagination** for large datasets (10 patients per page).
+* **Real-time updates** across multiple tabs using ElectricSQL sync.
+* **Local persistence** in IndexedDB so data survives refreshes and browser restarts.
+* **Decorator-driven ORM**: `@Entity`/`@Column` → automatic schema generation.
+* **CRUD repository layer** with parameterized SQL (\$1, \$2, etc.) to prevent injection.
+* **Dark / Light mode toggle** with Tailwind CSS `dark:` utilities and localStorage.
+
+---
+
+## 🛠 Tech Stack
 
 * **Framework:** React + TypeScript (Vite)
-* **Storage:** PGlite (@electric-sql/pglite, pglite-sync, pglite-react)
-* **ORM:** Custom decorator-based layer (no external ORM)
+* **Styling:** Tailwind CSS + PostCSS (`@tailwindcss/postcss`)
+* **Icons:** lucide-react
+* **Storage:** PGlite (`@electric-sql/pglite`, `pglite-sync`, `pglite-react`)
+* **ORM:** Custom decorators & metadata → schema sync
 * **Bundler:** Vite
+* **State & Forms:** React Hooks
 
-## Prerequisites
+---
+
+## 🚀 Prerequisites
 
 * Node.js (>=16)
 * npm or yarn
 
-## Setup & Local Development
+---
+
+## ⚙️ Setup & Local Development
 
 1. **Clone the repo**
 
@@ -36,7 +49,7 @@ A frontend-only patient registration application that uses [PGlite](https://pgli
 
    ```bash
    npm install
-   # or `yarn`
+   # or yarn
    ```
 
 3. **Run the dev server**
@@ -47,53 +60,68 @@ A frontend-only patient registration application that uses [PGlite](https://pgli
 
 4. **Open** your browser at `http://localhost:5173`
 
-## Project Structure
+---
+
+## 📂 Project Structure
 
 ```
 patient-reg-app/
 ├── src/
-│   ├── db.ts             # PGlite.create + schema sync + sync plugin
-│   ├── entities/         # Decorated entity classes
-│   │   └── Patient.ts
+│   ├── db.ts               # PGlite.create + strict durability + schema sync + sync plugin
+│   ├── entities/
+│   │   └── Patient.ts      # Decorated entity class
 │   ├── orm/
-│   │   ├── metadata.ts   # In-memory metadata registry
-│   │   ├── decorators.ts # @Entity & @Column decorators
-│   │   ├── schema.ts     # Auto-generate tables from metadata
-│   │   └── repository.ts # CRUD functions
+│   │   ├── metadata.ts     # In-memory metadata registry
+│   │   ├── decorators.ts   # @Entity & @Column decorators
+│   │   ├── schema.ts       # Auto-generate tables from metadata
+│   │   └── repository.ts   # CRUD functions (add, getAll, update, delete)
 │   ├── components/
-│   │   ├── AddPatientForm.tsx
-│   │   └── PatientsList.tsx
-│   ├── App.tsx           # Main UI
-│   └── main.tsx          # Entrypoint (imports db + App)
-├── vite.config.ts        # Vite config (optimizeDeps exclude)
-├── tsconfig.app.json
+│   │   ├── AddPatientForm.tsx   # Form with validation & error handling
+│   │   ├── PatientsList.tsx     # List with edit, delete & pagination
+│   │   └── DarkModeToggle.tsx   # Light / Dark mode switch
+│   ├── App.tsx             # Main UI wiring form & list & pagination
+│   └── main.tsx            # Entrypoint (imports index.css, db.ts, App)
+├── index.html
+├── tailwind.config.cjs     # Tailwind CSS config (darkMode: 'class')
+├── postcss.config.cjs      # PostCSS config using @tailwindcss/postcss & autoprefixer
+├── vite.config.ts          # Vite config (optimizeDeps exclude pglite)
+├── tsconfig.app.json       # TS config with decorators enabled
 └── README.md
 ```
 
-## Usage
+---
 
-* Register a patient by entering an **ID**, **Name**, and optional **Age**.
-* The patient list updates immediately and persists across refreshes.
-* Open a second tab to see real-time synchronization as you add patients.
+## 📖 Usage
 
-## Challenges Faced
+1. **Register** a patient by entering an **ID**, **Name**, and optional **Age** → click **Register Patient**.
+2. **Inline errors** will appear if you leave required fields blank, use negative age, or duplicate an ID.
+3. **Edit** or **Delete** any patient via the buttons next to their entry.
+4. **Navigate pages** with Prev/Next or page-number buttons (10 per page).
+5. **Toggle Dark/Light mode** via the sun/moon icon in the header.
+6. **Open a second tab**—additions, edits, or deletions sync instantly via ElectricSQL.
+7. **Refresh or close/reopen** your browser—data remains in IndexedDB and reloads on start.
 
-1. **WASM bundle bundling**: Had to exclude `@electric-sql/pglite` from Vite pre-bundling to avoid invalid FS bundle size errors.
-2. **Decorator metadata**: Configuring TypeScript (`experimentalDecorators` + `emitDecoratorMetadata`) in a multi-`tsconfig` setup.
-3. **Circular imports**: Refactored `syncSchema` to accept the DB instance to break a cycle between `db.ts` and `schema.ts`.
-4. **Postgres syntax**: Switched from `?` placeholders to `$1`, `$2`, ... in PGlite’s PostgreSQL environment.
+---
 
-## Deployment
+## 🛠 Challenges Faced
 
-To deploy the app (Vercel / Netlify):
+1. **WASM bundling**: Excluded `@electric-sql/pglite` from Vite pre-bundling to avoid invalid bundle-size errors.
+2. **Decorator metadata**: Configured TypeScript’s `experimentalDecorators` & `emitDecoratorMetadata` in a multi-tsconfig setup.
+3. **Circular imports**: Refactored `syncSchema` to accept the DB instance, breaking the cycle between `db.ts` and `schema.ts`.
+4. **Postgres syntax**: Switched from `?` placeholders to `$1`, `$2`, … for PGlite’s PostgreSQL-style parameter binding.
+5. **IndexedDB flush**: Enabled strict durability (`relaxedDurability: false`) to force writes to IndexedDB immediately.
 
-1. Push your code to GitHub (public repo).
-2. Connect the repo to Vercel or Netlify and set the build command to:
+---
 
-   ```bash
-   npm run build
-   ```
-3. Set the publish directory to `dist` (for Vite) or the default.
-4. Deploy.
+## 📦 Deployment
 
-Share the public URL here once it’s live.
+1. **Push** your code to a public GitHub/GitLab/Bitbucket repo.
+2. **Connect** the repo to Vercel or Netlify:
+
+   * **Build command:** `npm run build`
+   * **Publish directory:** `dist`
+3. **Deploy** and share the live URL here.
+
+---
+
+Thank you for reviewing—feel free to reach out with any questions or feedback!
