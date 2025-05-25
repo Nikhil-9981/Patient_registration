@@ -1,5 +1,5 @@
 // src/App.tsx
-import  { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AddPatientForm } from './components/AddPatientForm';
 import { PatientsList } from './components/PatientsList';
 import { getAllPatients } from './orm/repository';
@@ -10,8 +10,7 @@ export default function App() {
 
   useEffect(() => {
     (async () => {
-      const all = await getAllPatients();
-      setPatients(all);
+      setPatients(await getAllPatients());
     })();
   }, []);
 
@@ -19,7 +18,7 @@ export default function App() {
     <div className="max-w-md mx-auto mt-8 space-y-4">
       <h1 className="text-2xl font-bold">Patient Registration</h1>
       <AddPatientForm onAdded={setPatients} />
-      <PatientsList patients={patients} />
+      <PatientsList patients={patients} onChange={setPatients} />
     </div>
   );
 }
