@@ -1,4 +1,4 @@
-// **src/main.tsx** – Removed auto-insert debug code for persistence
+import './index.css';
 import './db';  // Ensure PGlite initialization runs on startup
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
