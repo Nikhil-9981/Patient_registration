@@ -1,4 +1,5 @@
 // src/db.ts
+import './entities/Patient';
 import { PGlite } from '@electric-sql/pglite';
 import { electricSync } from '@electric-sql/pglite-sync';
 import { syncSchema } from './orm/schema';
