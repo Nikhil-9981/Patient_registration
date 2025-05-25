@@ -1,5 +1,5 @@
 // src/App.tsx
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import { AddPatientForm } from './components/AddPatientForm';
 import { PatientsList } from './components/PatientsList';
 import { getAllPatients } from './orm/repository';
